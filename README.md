@@ -16,7 +16,7 @@
 ## 🛠️ Installation Guide
 ### 1️⃣ Clone Repository
 ```bash
-git clone https://github.com/your-repo/laravel-payment-gateway.git
+git clone https://github.com/YourMasterIsFool/test-payment-gateway-be.git
 cd laravel-payment-gateway
 ```
 
