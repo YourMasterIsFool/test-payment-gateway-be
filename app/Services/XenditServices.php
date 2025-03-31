@@ -180,7 +180,9 @@ class XenditServices {
         if($request['event'] == 'qr.payment'){
                 $reference_id =  $request['qr_code']['external_id'];
         }
-    
+        else {
+            $reference_id = $request['external_id'];
+        }
        $findTransaction =  $this->transactionService->findByExternalId($reference_id);
        $statusSuccess =  $this->masterStatusService->findByCode('success');
        if($findTransaction->transaction_status_id != $statusSuccess->id) {

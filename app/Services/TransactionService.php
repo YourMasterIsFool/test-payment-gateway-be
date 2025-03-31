@@ -60,21 +60,20 @@ class TransactionService {
             return $findAll;
         }
         catch(\Exception $e ) {
-            dd($e);
             return $this->responseService->internalServer($e);
         }
     }
 
     public function findByExternalId($externalId) {
-        try {
+        
             $findByExternalId =  $this->transactionRepository->findByExternalId($externalId);
-            return $findByExternalId;
-        }
-        catch(\Exception $e ) {
-            return $this->responseService->notFound(null, 'Transaction Not Found with external id');
-        }
-    }
+            
+            if(!$findByExternalId) {
+                return $this->responseService->notFound(null, 'Transaction not found');
+            }
 
+            return $findByExternalId;
+    }
     public function updateSuccessStatus($externalId) {
         DB::beginTransaction();
         try {
@@ -107,6 +106,12 @@ class TransactionService {
             $findSuccessStatus =  $this->masterStatusService->findByCode('failed');
             $this->transactionRepository->update($transaction, $findSuccessStatus->id);
             DB::commit();
+            $newTransaction = $this->findByExternalId($externalId);
+
+
+            broadcast(new PaymentSuccess($newTransaction))->toOthers();
+
+            return $newTransaction;
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->responseService->internalServer($e);
